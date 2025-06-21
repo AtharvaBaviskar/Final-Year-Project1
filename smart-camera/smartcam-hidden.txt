@@ -1,0 +1,15 @@
+debug
+admin
+config
+logs
+camera
+files
+system
+health
+stream
+flask-admin
+status
+backup
+static
+routes
+api

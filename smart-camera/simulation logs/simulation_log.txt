@@ -1,0 +1,41 @@
+[+] Cleaning logs...
+[+] Stopping and removing old containers...
+[+] Starting MQTT broker, RTSP server, and Flask API...
+[+] Waiting for containers to initialize...
+CONTAINER ID   IMAGE                                        COMMAND                  CREATED          STATUS          PORTS                                                                                  NAMES
+ddde29989716   smart_camera_osi_final_auto_fix2_flask-api   "python3 app.py"         11 seconds ago   Up 10 seconds   0.0.0.0:1887->1887/tcp, :::1887->1887/tcp                                              smart_camera_api
+94c93288a908   bluenviron/mediamtx                          "/mediamtx"              12 seconds ago   Up 11 seconds   0.0.0.0:8554->8554/tcp, :::8554->8554/tcp, 0.0.0.0:8888->8888/tcp, :::8888->8888/tcp   rtsp_server_osi
+0829db4567b7   eclipse-mosquitto                            "/docker-entrypoint.…"   12 seconds ago   Up 11 seconds   0.0.0.0:1883->1883/tcp, :::1883->1883/tcp                                              mqtt-broker
+[+] Testing Flask REST API endpoints...
+>>> POST /login
+{"message":"Login successful"}
+
+
+>>> GET /status
+{"streaming":false}
+
+
+>>> GET /snapshot
+{"snapshot":"http://camera.local/fake.jpg"}
+
+
+[+] Capturing network stats (UDP port 8554)...
+[+] Simulating RTSP stream via ffmpeg (UDP)...
+2: enp0s3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP mode DEFAULT group default qlen 1000
+3: docker0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc noqueue state DOWN mode DEFAULT group default 
+531: br-19f9f13b1acb: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP mode DEFAULT group default 
+533: veth58b7985@if532: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master br-19f9f13b1acb state UP mode DEFAULT group default 
+535: vethdf409ed@if534: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master br-19f9f13b1acb state UP mode DEFAULT group default 
+537: veth655bf12@if536: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master br-19f9f13b1acb state UP mode DEFAULT group default 
+/smart_camera_api => MAC: 02:42:ac:1f:00:04
+/rtsp_server_osi => MAC: 02:42:ac:1f:00:02
+/mqtt-broker => MAC: 02:42:ac:1f:00:03
+/smart_camera_api => IP: 172.31.0.4
+/rtsp_server_osi => IP: 172.31.0.2
+/mqtt-broker => IP: 172.31.0.3
+NAMES              PORTS
+smart_camera_api   0.0.0.0:1887->1887/tcp, :::1887->1887/tcp
+rtsp_server_osi    0.0.0.0:8554->8554/tcp, :::8554->8554/tcp, 0.0.0.0:8888->8888/tcp, :::8888->8888/tcp
+mqtt-broker        0.0.0.0:1883->1883/tcp, :::1883->1883/tcp
+[✓] Flask API /status endpoint reachable (HTTP 200)
+[✗] MQTT broker test FAILED: message not received

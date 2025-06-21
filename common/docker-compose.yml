@@ -1,0 +1,101 @@
+version: '3.8'
+
+services:
+  mqtt-broker:
+    image: eclipse-mosquitto
+    container_name: mqtt-broker
+    volumes:
+      - ../common/mqtt/config:/mosquitto/config
+      - ../common/mqtt/log:/mosquitto/log
+    ports:
+      - "1883:1883"
+    networks:
+      iot_net:
+        ipv4_address: 192.168.250.14
+
+  smart-camera:
+    build: ../smart-camera
+    container_name: smart_camera_api
+    ports:
+      - "1887:1887"       # Flask app
+      - "8556:8554"       # RTSP stream (via FFmpeg)
+    volumes:
+      - ../smart-camera/app.py:/app/app.py
+      - ../smart-camera/cctv.mp4:/app/cctv.mp4
+      - ../smart-camera/smartcam-hidden.txt:/app/smartcam-hidden.txt
+      - ../smart-camera/pcap_logs:/app/pcap_logs
+      - ../smart-camera/simulation logs:/app/simulation_logs
+      - ../common/mediamtx.yml:/app/mediamtx.yml
+      - ../smart-camera/entrypoint.sh:/app/entrypoint.sh  # new script for Flask + 
+    depends_on:
+      - mqtt-broker
+    networks:
+      iot_net:
+         ipv4_address: 192.168.250.10
+
+  rtsp-server:
+    image: bluenviron/mediamtx
+    container_name: rtsp_server_osi
+    ports:
+      - "8554:8554"
+      - "8888:8888"
+    volumes:
+      - ../common/mediamtx.yml:/mediamtx.yml
+      - /home/user/Documents/Final Year Project/iot_devices/smart-camera:/app
+    restart: always
+    networks:
+      iot_net:
+        ipv4_address: 192.168.250.15
+
+        
+  rtsp-controller:
+    build: ../smart-camera  # or ./smart-camera depending where the listener lives
+    container_name: rtsp_mqtt_controller
+    depends_on:
+      - mqtt-broker
+    volumes:
+      - ../smart-camera/cctv.mp4:/app/smart-camera/cctv.mp4
+      - ../smart-camera/rtsp_mqtt_listener.py:/app/rtsp_mqtt_listener.py
+    command: python3 rtsp_mqtt_listener.py
+    networks:
+      iot_net:
+        ipv4_address: 192.168.250.16
+
+  smart-light:
+    build: ../smart-light
+    container_name: smart_light_api
+    ports:
+      - "1881:1881"
+    volumes:
+      - ../smart-light/app.py:/app/app.py
+      - ../common/requirements.txt:/app/requirements.txt
+    depends_on:
+      - mqtt-broker
+    networks:
+      iot_net:
+        ipv4_address: 192.168.250.11
+        
+  smart-lock:
+    build: ../smart-lock
+    container_name: smart_lock_api
+    ports:
+      - "1882:1882"
+    volumes:
+      - ../smart-lock/app.py:/app/app.py
+      - ../common/requirements.txt:/app/requirements.txt
+    depends_on:
+      - mqtt-broker
+    networks:
+      iot_net:
+        ipv4_address: 192.168.250.12
+
+
+networks:
+  iot_net:
+    external: true
+
+
+
+
+
+

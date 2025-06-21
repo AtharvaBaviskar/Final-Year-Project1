@@ -1,0 +1,15 @@
+rtspAddress: :8554
+
+rtspTransports: [udp, tcp]  # ✅ replaces 'protocols'
+
+hls: yes
+hlsAlwaysRemux: yes
+
+webrtc: yes
+webrtcAddress: :8889
+webrtcEncryption: false
+
+paths:
+  live:
+    source: publisher
+    sourceOnDemand: no

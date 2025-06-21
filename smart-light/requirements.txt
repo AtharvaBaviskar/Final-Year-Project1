@@ -1,0 +1,3 @@
+flask
+paho-mqtt
+PyJWT==2.8.0

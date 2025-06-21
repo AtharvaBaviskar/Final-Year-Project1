@@ -1,0 +1,11 @@
+=== SMART LIGHT IoT TEST ===
+Test started at Wed Jun 11 11:08:46 UTC 2025
+
+[STEP 1] Sending MQTT: Power ON
+
+[STEP 2] Sending MQTT: Brightness 75
+
+[STEP 3] Sending MQTT: Color 0,255,100 (Greenish)
+
+[STEP 4] Verifying via /status endpoint
+{"brightness":75,"color_rgb":[0,255,100],"power":true}
